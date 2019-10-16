@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <title>Login page</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="/css/main.css" th:href="@{/css/main.css}" />
+ </head>
+    <body>
+        <div th:include="header"></div>
+        <h1>Login page</h1>
+        <p>Example user: user / password</p>
+        <p th:if="${loginError}" class="error">Wrong user or password</p>
+        <form th:action="@{/login}" method="post" id="loginForm">
+            <label for="username">Username</label>:
+            <input type="text" id="username" name="username" autofocus="autofocus" /> <br />
+            <label for="password">Password</label>:
+            <input type="password" id="password" name="password" /> <br />
+            <input type="submit" value="Log in" />
+            <input type="button" value="getDaily" @click="getDaily" />
+        </form>
+        <p><a href="/index" th:href="@{/index}">Back to home page</a></p>
+    </body>
+    <script type="text/javascript">
+    	new Vue({
+    		el:"#loginForm",
+    		methods:{
+    			getDaily: function(){
+    				const that = this;
+                    const token = document.querySelector('input[name="_csrf"]').value;
+                    axios({
+                        url: "/api/wx/daily/create",
+                        method: "post",
+                        headers:{
+                        	'X-CSRF-TOKEN':token
+                        },
+                        data: that.dto
+                    }).then(function(response) {
+                        if (response.status == '200') {
+                        	console.log(response)
+                        } else {
+                        	console.error(response)
+                        }
+                    }).catch(function(err) {
+                        console.error(err)
+                    });
+    			}
+    		}
+
+    	})
+
+    </script>
+</html>

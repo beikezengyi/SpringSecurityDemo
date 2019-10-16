@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+<link rel="stylesheet" href="/webjars/font-awesome/5.10.1/css/all.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/4.3.1/dist/css/bootstrap.css">
+<link rel="stylesheet" href="/webjars/bootstrap-vue/2.0.1/dist/bootstrap-vue.min.css">
+<link rel="stylesheet" href="/css/main.css" th:href="@{/css/main.css}" />
+</head>
+<body>
+    <div class="logout" id="header">
+        <div sec:authorize="isAuthenticated()">
+            <form action="#" th:action="@{/logout}" method="post">
+                <b-button type="submit" variant="outline-primary">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <i class="fas fa-user-shield"></i>
+                    <span sec:authentication="name"></span>
+                </b-button>
+            </form>
+        </div>
+        <div sec:authorize="!isAuthenticated()">
+            <i class="fas fa-eye-slash"></i>
+            <b-button variant="outline-primary" @click="showModal">ログイン</b-button>
+            <b-modal ref="login-form" centered title="ログイン" header-bg-variant="primary" hide-footer>
+                <b-container class="bv-example-row">
+                <form th:action="@{/login}" method="post">
+                    <b-row>
+                        <b-col>
+                            <b-form-input v-model="dto.username" size="lg" placeholder="ユーザ名"></b-form-input>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col>
+                            <b-form-input v-model="dto.password" type="password" size="lg" placeholder="パスワード"></b-form-input>
+                        </b-col>
+                    </b-row>
+                    <b-row class="text-center">
+                      <b-col>
+                        <b-button variant="outline-primary" @click="loginXhr">ログイン</b-button>
+                      </b-col>
+                    </b-row>
+                </form>
+                </b-container>
+            </b-modal>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="/webjars/axios/0.18.0/dist/axios.min.js"></script>
+<script type="text/javascript" src="/webjars/vue/2.6.6/dist/vue.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap-vue/2.0.1/dist/bootstrap-vue.js"></script>
+<script>
+    new Vue({
+        el: "#header",
+        data: {
+            dto: {
+            	username: null,
+            	password: null,
+            }
+        },
+        methods: {
+            showModal: function() {
+                this.$refs['login-form'].show()
+            },
+            loginXhr: function() {
+                const that = this;
+                const token = document.querySelector('input[name="_csrf"]').value;
+                axios({
+                    url: "/login",
+                    method: "post",
+                    headers:{
+                    	'X-CSRF-TOKEN':token
+                    },
+                    data: that.dto
+                }).then(function(response) {
+                    if (response.status == '200') {
+                        that.$refs['login-form'].hide()
+                    } else {
+                    	console.error(response)
+                    }
+                }).catch(function(err) {
+                    console.error(err)
+                });
+            }
+        },
+    })
+</script>
+
+</html>
