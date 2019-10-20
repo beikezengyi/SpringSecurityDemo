@@ -22,7 +22,7 @@ public interface FindUserMapper {
             "    t2.authid, " + //
             "    t3.auth_name, " + //
             "    t3.authority_name " + //
-            "from feinonaqi_user t1 " + //
+            "from feibonaqi_user t1 " + //
             "left outer join user_auth t2 " + //
             "on(t1.openid = t2.openid) " + //
             "left outer join feibonaqi_auth t3 " + //
